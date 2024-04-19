@@ -1,0 +1,34 @@
+@startuml
+participant main
+participant fn_delete_folder
+database StructureInfo
+database Foldar_A as A
+database Foldar_B as B
+
+activate main
+main-->StructureInfo : フォルダ構成取得（葉から調べる）
+main-->A : フォルダ構成チェック
+opt フォルダ削除あり
+main->fn_delete_folder:削除対象のフォルダの情報
+activate fn_delete_folder
+fn_delete_folder-->B:削除対象のフォルダがあるか
+alt 削除対象のフォルダがない場合
+fn_delete_folder-->StructureInfo : フォルダ構成から追加対象のフォルダを削除
+else ある場合
+fn_delete_folder-->B : 削除対象のフォルダ下にファイルがあるか
+alt 削除対象のフォルダ下にファイルがある場合
+fn_delete_folder-->StructureInfo : フォルダ下ファイルの削除可否を尋ねるフラグをセット
+fn_delete_folder -> fn_delete_folder : 戻り値に削除未完了を設定
+else ない場合
+fn_delete_folder-->StructureInfo : フォルダ構成から追加対象のフォルダを削除
+fn_delete_folder-->B:削除対象のフォルダを削除
+end
+end
+return 削除完了/削除未完了
+
+deactivate fn_delete_folder
+
+end
+deactivate main
+
+@enduml

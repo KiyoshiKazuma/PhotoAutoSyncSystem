@@ -1,0 +1,25 @@
+@startuml
+participant main
+participant fn_add_file
+database StructureInfo
+database Foldar_A as A
+database Foldar_B as B
+
+activate main
+main-->StructureInfo : ファイル情報取得
+main-->A : ファイル情報チェック
+opt ファイル追加あり
+main->fn_add_file:追加対象のファイル情報
+activate fn_add_file
+fn_add_file --> B :追加対象のファイルがあるか
+alt 追加対象のファイルが既にある場合
+fn_add_file -> fn_add_file :ファイル情報を比較
+alt ファイル情報が一致している場合
+else ない場合
+fn_add_file --> B : ファイルを追加する
+
+end
+return 
+deactivate main
+
+@enduml
