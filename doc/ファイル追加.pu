@@ -15,9 +15,13 @@ fn_add_file --> B :追加対象のファイルがあるか
 alt 追加対象のファイルが既にある場合
 fn_add_file -> fn_add_file :ファイル情報を比較
 alt ファイル情報が一致している場合
+fn_add_file --> StructureInfo : ファイル情報を追加
+else 一致していない場合
+fn_add_file --> StructureInfo : コンフリクト情報を追加
+end
 else ない場合
 fn_add_file --> B : ファイルを追加する
-
+fn_add_file --> StructureInfo : ファイル情報を追加
 end
 return 
 deactivate main
