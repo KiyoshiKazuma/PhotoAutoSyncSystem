@@ -6,8 +6,6 @@ participant 同期処理 as sync
 activate ctrl
 ctrl --> sync : fn_sync_main
 activate sync
-sync --> sync : フォルダのハッシュ値確認
-opt 更新あり
 sync --> sync : フォルダ構成の追加
 activate sync
 return 
@@ -21,7 +19,7 @@ sync --> sync : フォルダ削除
 activate sync
 return 
 sync --> sync:ハッシュ値の更新
-end
+
 return 
 
 
