@@ -1,0 +1,51 @@
+@startuml
+
+node サーバー{
+    folder リポジトリA{
+        file サーバーファイル
+    }
+
+    frame アプリケーション{
+        component MNG
+        component DETECT
+        component SYNC
+        component NOTICE
+        component DATA
+        component CMD
+    }
+
+    frame 設定ファイル{
+        file config
+        file 構成情報
+        file コンフリクト情報
+    }
+    
+    frame OS{
+        component scheduler
+        component shell
+        component toast
+        interface samba    
+    }
+
+}
+node クライアント{
+    folder リポジトリB{
+        file クライアントファイル
+    }
+}
+
+scheduler --> MNG
+MNG --> DETECT
+MNG --> SYNC
+MNG --> NOTICE
+MNG --> DATA
+DETECT --> CMD
+SYNC --> CMD
+DATA --> 設定ファイル
+CMD --> shell
+NOTICE --> toast
+shell --> リポジトリA
+shell -- samba
+samba --> リポジトリB
+
+@enduml
