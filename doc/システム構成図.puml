@@ -1,5 +1,5 @@
 @startuml
-
+scale 720 width
 node サーバー{
     folder リポジトリA{
         file サーバーファイル
@@ -7,17 +7,22 @@ node サーバー{
 
     frame アプリケーション{
         component MNG
-        component DETECT
         component SYNC
         component NOTICE
         component DATA
         component CMD
+        component CONFLICT
     }
 
-    frame 設定ファイル{
-        file config
+    frame 外部ファイル{
+        file 設定情報
         file 構成情報
         file コンフリクト情報
+        file ログ
+    }
+
+    frame トラッシュフォルダ{
+        file トラッシュファイル
     }
     
     frame OS{
@@ -35,17 +40,19 @@ node クライアント{
 }
 
 scheduler --> MNG
-MNG --> DETECT
 MNG --> SYNC
 MNG --> NOTICE
-MNG --> DATA
-DETECT --> CMD
+MNG --> CONFLICT
 SYNC --> CMD
-DATA --> 設定ファイル
+SYNC --> DATA
+CONFLICT --> DATA
+MNG --> DATA 
+DATA --> 外部ファイル
 CMD --> shell
 NOTICE --> toast
 shell --> リポジトリA
 shell -- samba
+shell --> トラッシュフォルダ
 samba --> リポジトリB
 
 @enduml
