@@ -1,5 +1,5 @@
 @startuml
-scale 1400 width
+scale 700 width
 node サーバー{
     folder リポジトリA{
         file サーバーファイル
