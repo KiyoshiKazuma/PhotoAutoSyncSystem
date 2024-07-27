@@ -1,0 +1,28 @@
+@startuml
+scale 700 width
+start
+:構成情報一覧を取得;
+
+while (構成情報内のすべてのファイルを確認したか?) is (no)
+    :次の構成情報(以降「対象ファイル」と呼ぶ)の情報を取得する;
+    if((A)サーバーリポジトリに対象ファイルがある) then (yes)        
+        if((B)クライアントリポジトリに対象ファイルがある) then (yes)
+        else (no)            
+            partition "**detect** Del"{
+                :SYNC_D(サーバー);
+            }
+        endif
+    else (no)
+        if((B)クライアントリポジトリに対象ファイルがある) then (yes)
+            partition "**detect** Del"{
+                :SYNC_D(クライアント);
+            }
+        else (no)
+            partition "**detect** DelDel"{
+                :SYNC_DD;
+            }
+        endif
+    endif
+endwhile
+stop
+@enduml

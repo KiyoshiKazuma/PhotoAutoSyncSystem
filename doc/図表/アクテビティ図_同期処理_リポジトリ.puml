@@ -1,0 +1,53 @@
+@startuml
+scale 700 width
+start
+:リポジトリ内のファイル一覧を取得;
+while (リポジトリ内のすべてのファイルを確認したか?) is (no)
+    :次のファイル(以降「対象ファイル」と呼ぶ)の情報を取得する;
+    if((C)構成情報に対象ファイルがある) then (yes)
+        :見つかった構成情報(以降「対応構成情報」と呼ぶ)を取得する;
+        if((D)対象ファイルと構成情報のファイルは同一である) then (yes)
+        else (no)
+            if((B)対リポジトリに対象ファイルがある) then (yes)
+               :見つかったファイル(以降「「対応ファイル」と呼ぶ)の情報を取得する;
+               if((E)対応ファイルと構成情報のファイルは同一である) then (yes)
+                    partition "**detect** Edi"{
+                        :SYNC_E;
+                    }
+               else (no)/'(E) = no'/
+                    partition "**detect** EdiEdi"{
+                        
+                    if((F)対応ファイルと対象ファイルは同一である) (yes)
+                        :SYNC_EE;
+                    else (no)
+                        :CONF_EE;
+                    endif
+
+                    }
+               endif
+            else (no) /'(B) = no'/
+                partition "**detect** DelEdi"{
+                    :CONF_DE;
+                }
+            endif
+        endif
+    else (no) /'(C) = no'/
+        :処理なし;
+        if((B)対リポジトリに対象ファイルがある) then (yes)
+            partition "**detect** AddAdd"{
+                :見つかったファイル(以降「「対応ファイル」と呼ぶ)の情報を取得する;
+                if((E)対応ファイルと構成情報のファイルは同一である) then (yes)
+                    :SYNC_AA;
+                else (no) /'(E) = no'/
+                    :CONF_AA;
+                endif
+            }
+        else (no) /'(B) = no'/
+            partition "**detect** Add"{
+                :SYNC_A;
+            }
+        endif
+    endif
+endwhile
+stop
+@enduml
