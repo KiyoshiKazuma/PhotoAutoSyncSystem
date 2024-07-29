@@ -1,0 +1,12 @@
+@startuml
+scale 700 width
+start
+   :コンフリクト情報を取得する;
+   :コンフリクト種別を判定する;
+   if(コンフリクト種別が定義されている) then (yes)
+        :コンフリクト処理の選択肢を作成し通知する。;
+    else (no)
+        :コンフリクト情報を削除する;
+    endif
+end
+@enduml
