@@ -7,6 +7,7 @@ node サーバー{
 
     frame アプリケーション{
         component MNG
+        component DETECT
         component SYNC
         component NOTICE
         component DATA
@@ -40,7 +41,8 @@ node クライアント{
 }
 
 scheduler --> MNG
-MNG --> SYNC
+MNG --> DETECT
+DETECT --> SYNC
 MNG --> NOTICE
 MNG --> CONFLICT
 SYNC --> CMD
