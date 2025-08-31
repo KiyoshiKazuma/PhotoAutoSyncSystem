@@ -1,0 +1,39 @@
+@startuml
+scale 700 width
+
+object file_info {
+    + path: str
+    + hash: str
+    + __init__(path: str, hash: str)
+}
+
+object composition_info {
+    + files: list[file_info]
+    + __init__()
+    + add_file(file: file_info)
+    + clear()
+    + read_composition(input_file: str)
+    + print()
+    + compare(otherfile: file_info)
+}
+
+object repository_info {
+    + dir_root_path: str
+    + files_data_file_path: str
+    + composition: composition_info
+    + __init__(path: str, filesdata_filename: str)
+    + update()
+    + write()
+    + read_composition_data()
+    + check_change()
+}
+
+object management_info {
+    + config_file_path: str
+    + repository1: repository_info
+    + repository2: repository_info
+    + __init__(config_file_path: str)
+    + read_config()
+    + write_config()
+    + compare_composition_data()
+}

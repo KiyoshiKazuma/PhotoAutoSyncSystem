@@ -1,0 +1,3 @@
+Repository  : ディレクトリのパス: ファイル情報データのパス: 差分ファイルのパス
+Repository 1: C:\\Users\\makiy\\programing\\python\\PhotoAutoSyncSystem\\test\\dir\\202505: file_info_local1.txt: diff_local1.txt
+Repository 2: C:\\Users\\makiy\\programing\\python\\PhotoAutoSyncSystem\\test\\dir\\202505_2: file_info_local2.txt: diff_local2.txt
