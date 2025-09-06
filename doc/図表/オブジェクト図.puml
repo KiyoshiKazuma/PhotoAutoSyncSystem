@@ -2,8 +2,8 @@
 scale 700 width
 
 object file_info {
-    + path: str
-    + hash: str
+    + path: str  
+    + hash: str 
     + __init__(path: str, hash: str)
 }
 
@@ -32,8 +32,13 @@ object management_info {
     + config_file_path: str
     + repository1: repository_info
     + repository2: repository_info
+    + repository1_diff: composition_diff_info
+    + repository2_diff: composition_diff_info
     + __init__(config_file_path: str)
     + read_config()
-    + write_config()
+    + update()
+    
     + compare_composition_data()
+    + check_change()
+    + merge()
 }
