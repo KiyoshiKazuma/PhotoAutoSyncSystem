@@ -36,7 +36,7 @@ SYNC_DD = 5
 SYNC_EE = 6
 
 # デバッグモード
-DEBUG_LEVEL = 1
+DEBUG_LEVEL = 0
 
 # ファイル情報
 class file_info:
