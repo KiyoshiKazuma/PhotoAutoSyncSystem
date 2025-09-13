@@ -6,18 +6,18 @@ node サーバー{
     }
 
     frame アプリケーション{
-        component MNG
-        component DETECT
-        component SYNC
-        component NOTICE
-        component DATA
-        component CMD
-        component CONFLICT
+        component MANAGEMENT
+        component REPOSITORY
+        component COMPOSITION
+        component COMPOSITION_DIFF
+        component MERGER
+        component FILEOPERATER
     }
 
     frame 外部ファイル{
         file 設定情報
         file 構成情報
+        file 変更履歴
         file コンフリクト情報
         file ログ
     }
@@ -27,10 +27,8 @@ node サーバー{
     }
     
     frame OS{
-        component scheduler
         component shell
-        component toast
-        interface samba    
+        component samba    
     }
 
 }
@@ -40,21 +38,23 @@ node クライアント{
     }
 }
 
-scheduler --> MNG
-MNG --> DETECT
-DETECT --> SYNC
-MNG --> NOTICE
-MNG --> CONFLICT
-SYNC --> CMD
-SYNC --> DATA
-CONFLICT --> DATA
-MNG --> DATA 
-DATA --> 外部ファイル
-CMD --> shell
-NOTICE --> toast
-shell --> リポジトリA
-shell -- samba
-shell --> トラッシュフォルダ
-samba --> リポジトリB
+MANAGEMENT --> REPOSITORY
+MANAGEMENT --> MERGER
+REPOSITORY --> COMPOSITION
+REPOSITORY --> COMPOSITION_DIFF
+COMPOSITION --> FILEOPERATER
+MERGER --> FILEOPERATER
+
+MANAGEMENT --> 設定情報
+REPOSITORY --> 構成情報
+REPOSITORY --> 変更履歴
+MERGER --> コンフリクト情報
+FILEOPERATER --> ログ
+FILEOPERATER --> OS
+OS --> リポジトリA
+OS --> リポジトリB
+OS --> トラッシュフォルダ
+
+
 
 @enduml
