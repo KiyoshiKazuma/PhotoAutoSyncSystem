@@ -663,7 +663,7 @@ class management_info:
 
 
 if __name__ == "__main__":
-    config_file_path = "C:\\Users\\makiy\\programing\\python\\PhotoAutoSyncSystem\\test\\config"
+    config_file_path = ".\\config"
     management = management_info(config_file_path)
     print("Start updating repositories...")
     management.update()
