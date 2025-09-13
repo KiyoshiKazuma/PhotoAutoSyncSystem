@@ -1,0 +1,6 @@
+Plantumlのjarファイルのパスを指定する
+
+・設定名
+Markdown-preview-enhanced: Plantuml Jar Path
+・設定値
+(ルートパス)\PhotoAutoSyncSystem\import\plantuml-1.2024.5.jar
