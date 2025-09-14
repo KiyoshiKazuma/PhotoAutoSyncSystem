@@ -97,15 +97,17 @@ class composition_info:
     def read(self, input_file: str):
         if DEBUG_LEVEL >= 2:
             print(f"DEBUG:COMPOSITION_INFO: Reading composition info from {input_file}")
-        with open(input_file, "r") as f:
-            for line in f:
-                # 行からファイルパスとハッシュを抽出
-                if line.startswith("File:"): 
-                    line_split = line.split(", Hash:")
-                    file_path = line_split[0].replace("File: ", "").strip()
-                    file_hash = line_split[1].strip()
-                    file = file_info(file_path, file_hash)
-                    self.add_file(file)
+        # ファイルが存在するか確認
+        if os.path.isfile(input_file):
+            with open(input_file, "r") as f:
+                for line in f:
+                    # 行からファイルパスとハッシュを抽出
+                    if line.startswith("File:"): 
+                        line_split = line.split(", Hash:")
+                        file_path = line_split[0].replace("File: ", "").strip()
+                        file_hash = line_split[1].strip()
+                        file = file_info(file_path, file_hash)
+                        self.add_file(file)
     
     # ファイル情報を書き込む
     def write(self, output_file: str):
@@ -222,20 +224,22 @@ class composition_diff_info:
     
     # 差分情報をファイルから読み込む
     def read(self, input_file: str):
-        with open(input_file, "r") as f:
-            for line in f:
-                if line.startswith("Added:"):
-                    file_path = line.replace("Added:", "").strip()
-                    file = file_info(file_path, "")
-                    self.append_added_file(file)
-                elif line.startswith("Removed:"):
-                    file_path = line.replace("Removed:", "").strip()
-                    file = file_info(file_path, "")
-                    self.append_removed_file(file)
-                elif line.startswith("Changed:"):
-                    file_path = line.replace("Changed:", "").strip()
-                    file = file_info(file_path, "")
-                    self.append_changed_file(file)
+        # ファイルが存在するか確認
+        if os.path.isfile(input_file):            
+            with open(input_file, "r") as f:
+                for line in f:
+                    if line.startswith("Added:"):
+                        file_path = line.replace("Added:", "").strip()
+                        file = file_info(file_path, "")
+                        self.append_added_file(file)
+                    elif line.startswith("Removed:"):
+                        file_path = line.replace("Removed:", "").strip()
+                        file = file_info(file_path, "")
+                        self.append_removed_file(file)
+                    elif line.startswith("Changed:"):
+                        file_path = line.replace("Changed:", "").strip()
+                        file = file_info(file_path, "")
+                        self.append_changed_file(file)
 
 # リポジトリ情報
 class repository_info:
