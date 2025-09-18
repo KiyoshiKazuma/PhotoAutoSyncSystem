@@ -7,6 +7,7 @@ import shutil
 import copy
 import csv
 import yaml
+import argparse
 
 # シンボル定義
 EQUAL = 0
@@ -748,6 +749,24 @@ class management_info:
 
 
 if __name__ == "__main__":
-    config_file_path = "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/src/config"
+    parser = argparse.ArgumentParser(
+        prog="PhotoAutoSync",
+        usage="python.exe PhotoAutoSync.py <config_path> [start_phase]",
+        epilog="end",
+        add_help=True,
+    )
+    
+    parser.add_argument("config_path", type=str, help="Config file path")
+    parser.add_argument("-p", "--phase", type=int, help="start phase num [1-4]")
+    
+    args = parser.parse_args()
+    config_file_path = args.config_path
+    phase_num = args.phase
+    
+    if (phase_num is None):
+        phase_num=1
+    
+    print(f"config file: {config_file_path}\tphase num: {phase_num}\n")
+    
     management = management_info(config_file_path)
-    management.process()
+    management.process(phase_num)
