@@ -1,7 +1,8 @@
-Repository  : ディレクトリのパス: ファイル情報データのパス: 差分ファイルのパス
-Repository 1: C:\\Users\\makiy\\programing\\PhotoAutoSyncSystem\\test\\dir\\2025: C:\\Users\\makiy\\programing\\PhotoAutoSyncSystem\\test\\file_info_local1.txt: C:\\Users\\makiy\\programing\\PhotoAutoSyncSystem\\test\\diff_local1.txt
-Repository 2: C:\\Users\\makiy\\programing\\PhotoAutoSyncSystem\\test\\dir\\2025_client: C:\\Users\\makiy\\programing\\PhotoAutoSyncSystem\\test\\file_info_local2.txt: C:\\Users\\makiy\\programing\\PhotoAutoSyncSystem\\test\\diff_local2.txt
-バックアップフォルダ
-BackUpFolder: C:\\Users\\makiy\\programing\\PhotoAutoSyncSystem\\test\\backup
-ログファイル
-LogFile: C:\\Users\\makiy\\programing\\PhotoAutoSyncSystem\\test\\log.txt
+repository1_root_path: "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/test/dir/202505"
+repository1_repository_info_path: "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/test/file_info_local1.csv"
+repository1_history_path: "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/test/diff_local1.csv"
+repository2_root_path: "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/test/dir/202505_2"
+repository2_repository_info_path: "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/test/file_info_local2.csv"
+repository2_history_path: "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/test/diff_local2.csv"
+back_up_folder_path: "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/test/backup"
+log_file_path: "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/test/log.txt"
