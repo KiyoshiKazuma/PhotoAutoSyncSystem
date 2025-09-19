@@ -113,7 +113,7 @@ class composition_info:
     def read(self, input_file: str):
         # ファイルが存在するか確認
         if os.path.isfile(input_file):
-            with open(input_file, "r") as f:
+            with open(input_file, "r", encoding="cp932") as f:
                 reader = csv.reader(f)
                 for row in reader:
                     if(len(row)) != 2:
@@ -131,7 +131,7 @@ class composition_info:
     
     # ファイル情報を書き込む
     def write(self, output_file: str):
-        with open(output_file, "w", newline="") as f:
+        with open(output_file, "w", newline="", encoding="cp932") as f:
             writer = csv.writer(f)
             for file in self.files:
                 writer.writerow([file.path,file.hash])
@@ -227,7 +227,7 @@ class composition_diff_info:
 
     # 差分情報をファイルに書き込む
     def write(self, output_file: str):
-        with open(output_file, "w") as f:
+        with open(output_file, "w", encoding="cp932") as f:
             for file in self.added_files:
                 f.write(f"Added: {file.path}\n")
             for file in self.removed_files:
@@ -239,7 +239,7 @@ class composition_diff_info:
     def read(self, input_file: str):
         # ファイルが存在するか確認
         if os.path.isfile(input_file):            
-            with open(input_file, "r") as f:
+            with open(input_file, "r", encoding="cp932") as f:
                 for line in f:
                     if line.startswith("Added:"):
                         file_path = line.replace("Added:", "").strip()
@@ -435,7 +435,7 @@ class management_info:
             raise ValueError("Repository paths are not set correctly in the config file")
 
     def readconfig(self):
-        with open(self.config_file_path, "r", encoding='utf-8') as f:
+        with open(self.config_file_path, "r", encoding='cp932') as f:
             config_data =  yaml.safe_load(f)
             self.repository1_root_path = config_data.get("repository1_root_path")
             self.repository1_repository_info_path = config_data.get("repository1_repository_info_path")
@@ -445,6 +445,16 @@ class management_info:
             self.repository2_history_path = config_data.get("repository2_history_path")
             self.back_up_folder_path = config_data.get("back_up_folder_path")
             self.log_file_path = config_data.get("log_file_path")
+    
+    def printconfig(self):
+        print(f"repository1_root_path: {self.repository1_root_path}")
+        print(f"repository1_repository_info_path: {self.repository1_repository_info_path}")
+        print(f"repository1_history_path: {self.repository1_history_path}")
+        print(f"repository2_root_path: {self.repository2_root_path}")
+        print(f"repository2_repository_info_path: {self.repository2_repository_info_path}")
+        print(f"repository2_history_path: {self.repository2_history_path}")
+        print(f"back_up_folder_path: {self.back_up_folder_path}")
+        print(f"log_file_path: {self.log_file_path}")
             
     # 更新処理を実行する
     # 引数:process_cntを指定すると途中から再開が可能
@@ -717,7 +727,7 @@ class management_info:
             os.makedirs(dst_dir)
         print(f"Copying {src_path} to {dst_path}")
         #ログファイルにコピー情報を出力
-        with open(self.log_file_path, "a", encoding='utf-8') as log_file:
+        with open(self.log_file_path, "a", encoding='cp932') as log_file:
             log_file.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Copying {src_path} to {dst_path}\n")
         shutil.copy2(src_path, dst_path)
     
@@ -731,7 +741,7 @@ class management_info:
             os.makedirs(dst_dir)
         print(f"Moving {src_path} to {dst_path}")
         #ログファイルに移動情報を出力
-        with open(self.log_file_path, "a", encoding='utf-8') as log_file:
+        with open(self.log_file_path, "a", encoding='cp932') as log_file:
             log_file.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Moving {src_path} to {dst_path}\n")
         shutil.move(src_path, dst_path)
 
