@@ -154,9 +154,9 @@ class composition_info:
 # 構成情報の差分
 class composition_diff_info:
     # プロパティの宣言
-    added_files:   list[file_info]
-    removed_files: list[file_info]
-    changed_files: list[file_info]
+    added_files:   list[str]
+    removed_files: list[str]
+    changed_files: list[str]
 
     def __init__(self):
         self.clear()
@@ -187,53 +187,74 @@ class composition_diff_info:
                 self.append_added_file(file)
                 
     # 指定のファイル情報が差分情報に含まれているか確認
-    def diff_type(self, file: file_info) -> int:
-        if file.path in [f.path for f in self.added_files]:
+    def diff_type(self, file) -> int:
+        if(type(file) is file_info):
+            file_path = file.path
+        elif(type(file) is str):
+            file_path = file
+            
+        if file_path in self.added_files:
             return ADD
-        elif file.path in [f.path for f in self.removed_files]:
+        elif file_path in self.removed_files:
             return REMOVE
-        elif file.path in [f.path for f in self.changed_files]:
+        elif file_path in self.changed_files:
             return CHANGE
         return EQUAL
 
-    def append_added_file(self, file: file_info):
-        self.added_files.append(file)
-
+    def append_added_file(self, file):
+        if(type(file) is file_info):
+            file_path = file.path
+        elif(type(file) is str):
+            file_path = file
+        self.added_files.append(file_path)
 
     def append_removed_file(self, file: file_info):
-        self.removed_files.append(file)
+        if(type(file) is file_info):
+            file_path = file.path
+        elif(type(file) is str):
+            file_path = file
+        self.removed_files.append(file_path)
 
     def append_changed_file(self, file: file_info):
-        self.changed_files.append(file)
+        if(type(file) is file_info):
+            file_path = file.path
+        elif(type(file) is str):
+            file_path = file
+        self.changed_files.append(file_path)
     
     def remove_diff_file(self, file: file_info):
-        if file in self.added_files:
-            self.added_files.remove(file)
-        elif file in self.removed_files:
-            self.removed_files.remove(file)
-        elif file in self.changed_files:
-            self.changed_files.remove(file)
+        if(type(file) is file_info):
+            file_path = file.path
+        elif(type(file) is str):
+            file_path = file
+
+        if file_path in self.added_files:
+            self.added_files.remove(file_path)
+        elif file_path in self.removed_files:
+            self.removed_files.remove(file_path)
+        elif file_path in self.changed_files:
+            self.changed_files.remove(file_path)
 
     def print(self):
         print("Added:")
-        for file in self.added_files:
-            print(f"  {file.path}")
+        for file_path in self.added_files:
+            print(f"  {file_path}")
         print("Removed:")
-        for file in self.removed_files:
-            print(f"  {file.path}")
+        for file_path in self.removed_files:
+            print(f"  {file_path}")
         print("Changed:")
-        for file in self.changed_files:
-            print(f"  {file.path}")
+        for file_path in self.changed_files:
+            print(f"  {file_path}")
 
     # 差分情報をファイルに書き込む
     def write(self, output_file: str):
         with open(output_file, "w", encoding="cp932") as f:
-            for file in self.added_files:
-                f.write(f"Added: {file.path}\n")
-            for file in self.removed_files:
-                f.write(f"Removed: {file.path}\n")
-            for file in self.changed_files:
-                f.write(f"Changed: {file.path}\n")
+            for file_path in self.added_files:
+                f.write(f"Added: {file_path}\n")
+            for file_path in self.removed_files:
+                f.write(f"Removed: {file_path}\n")
+            for file_path in self.changed_files:
+                f.write(f"Changed: {file_path}\n")
     
     # 差分情報をファイルから読み込む
     def read(self, input_file: str):
@@ -522,14 +543,24 @@ class management_info:
         # 2 リポジトリ1の更新情報をマージ
         # 2-1 追加されたファイルをマージ
         
+        file_all = 0
+        file_process_cnt = 0
+        file_process_cnt2 = 0
+        add_file_num = 0
+        
         # ループ文中でインスタンスの要素を削除するため、リストのコピーを作成してループを回す
         files = copy.deepcopy(self.repository1.composition_history.added_files)
+        
+        file_all = len(files)
         for file in files:
             # 対象ファイルの差分情報を取得
             diff_type = self.composition_diff.diff_type(file)
+            file_process_cnt2 += 1
+            add_file_num = len(self.repository1.composition_history.added_files)
             if diff_type == EQUAL:
                 # 差分がない場合、マージは不要のため更新情報を削除する
-                self.repository1.composition_history.remove_diff_file(file)   
+                self.repository1.composition_history.remove_diff_file(file)
+                file_process_cnt += 1
             elif diff_type == ADD:
                 # リポジトリ1に追加されたファイルが、リポジトリ2のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
@@ -543,7 +574,7 @@ class management_info:
             elif diff_type == CHANGE:
                 # リポジトリ1に追加されたファイルが、リポジトリ2のファイルと差分がある場合
                 # コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
-                print(f"Conflict: File {file.path} changed in both repositories.")            
+                print(f"Conflict: File {file} changed in both repositories.")            
 
         # 2-2 削除されたファイルをマージ
         # ループ文中でインスタンスの要素を削除するため、リストのコピーを作成してループを回す
@@ -564,11 +595,11 @@ class management_info:
             elif diff_type == REMOVE:
                 # リポジトリ1に削除されたファイルが、リポジトリ1のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
-                print(f"Error: File {file.path} deleted only in repository1. This should not happen.")
+                print(f"Error: File {file} deleted only in repository1. This should not happen.")
             elif diff_type == CHANGE:
                 # リポジトリ1に削除されたファイルが、リポジトリ2のファイルと差分がある場合
                 # コンフリクト(リポジトリ1で削除、リポジトリ2で変更)
-                print(f"Conflict: File {file.path} deleted in repository1 and changed in repository2.")                
+                print(f"Conflict: File {file} deleted in repository1 and changed in repository2.")                
                 
         # 2-3 変更されたファイルをマージ
         for file in self.repository1.composition_history.changed_files:
@@ -590,19 +621,19 @@ class management_info:
                 elif repository2_diff_type == CHANGE:
                     # リポジトリ2の更新履歴も変更の場合、コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
                     # 暫定的にマージを実行せず、シリアルログに出力する
-                    print(f"Conflict: File {file.path} changed in both repositories.")
+                    print(f"Conflict: File {file} changed in both repositories.")
                 elif repository2_diff_type == ADD:
                     # リポジトリ2の更新履歴が追加の場合、コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
                     # 暫定的にマージを実行せず、シリアルログに出力する
-                    print(f"Conflict: File {file.path} changed in repository1 and added in repository2.")
+                    print(f"Conflict: File {file} changed in repository1 and added in repository2.")
                 elif repository2_diff_type == REMOVE:
                     # リポジトリ2の更新履歴が削除の場合、コンフリクト(リポジトリ1で変更、リポジトリ2で削除)
                     # 暫定的にマージを実行せず、シリアルログに出力する
-                    print(f"Conflict: File {file.path} changed in repository1 and removed in repository2.")                
+                    print(f"Conflict: File {file} changed in repository1 and removed in repository2.")                
             elif diff_type == ADD:
                 # リポジトリ1に変更されたファイルが、リポジトリ2のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
-                print(f"Error: File {file.path} changed only in repository1. This should not happen.")
+                print(f"Error: File {file} changed only in repository1. This should not happen.")
             elif diff_type == REMOVE:
                 # リポジトリ1に変更されたファイルが、リポジトリ1のみに存在する場合
                 # リポジトリ2にファイルをコピーする。
@@ -611,8 +642,10 @@ class management_info:
                 self.repository1.composition_history.remove_diff_file(file)
         
         # 3 リポジトリ2の更新情報をマージ
+        # ループ文中でインスタンスの要素を削除するため、リストのコピーを作成してループを回す
+        files = copy.deepcopy(self.repository2.composition_history.added_files)
         # 3-1 追加されたファイルをマージ
-        for file in self.repository2.composition_history.added_files:
+        for file in files:
             # 対象ファイルの差分情報を取得
             diff_type = self.composition_diff.diff_type(file)
         
@@ -628,11 +661,11 @@ class management_info:
             elif diff_type == REMOVE:
                 # リポジトリ2に追加されたファイルが、リポジトリ1のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
-                print(f"Error: File {file.path} exists only in repository2. This should not happen.")                
+                print(f"Error: File {file} exists only in repository2. This should not happen.")                
             elif diff_type == CHANGE:
                 # リポジトリ2に追加されたファイルが、リポジトリ1のファイルと差分がある場合
                 # コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
-                print(f"Conflict: File {file.path} changed in both repositories.")
+                print(f"Conflict: File {file} changed in both repositories.")
 
         # 3-2 削除されたファイルをマージ
         for file in self.repository2.composition_history.removed_files:
@@ -645,7 +678,7 @@ class management_info:
             elif diff_type == ADD:
                 # リポジトリ2に削除されたファイルが、リポジトリ2のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
-                print(f"Error: File {file.path} deleted only in repository2. This should not happen.")
+                print(f"Error: File {file} deleted only in repository2. This should not happen.")
             elif diff_type == REMOVE:
                 # リポジトリ2に削除されたファイルが、リポジトリ1のみに存在する場合
                 # リポジトリ1からファイルを削除する。
@@ -655,7 +688,7 @@ class management_info:
             elif diff_type == CHANGE:
                 # リポジトリ2に削除されたファイルが、リポジトリ1のファイルと差分がある場合
                 # コンフリクト(リポジトリ1で変更、リポジトリ2で削除)
-                print(f"Conflict: File {file.path} deleted in repository1 and changed in repository2.")
+                print(f"Conflict: File {file} deleted in repository1 and changed in repository2.")
 
         # 3-3 変更されたファイルをマージ
         for file in self.repository2.composition_history.changed_files:
@@ -677,15 +710,15 @@ class management_info:
                 elif repository1_diff_type == CHANGE:
                     # リポジトリ1の更新履歴も変更の場合、コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
                     # 暫定的にマージを実行せず、シリアルログに出力する
-                    print(f"Conflict: File {file.path} changed in both repositories.")
+                    print(f"Conflict: File {file} changed in both repositories.")
                 elif repository1_diff_type == ADD:
                     # リポジトリ1の更新履歴が追加の場合、コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
                     # 暫定的にマージを実行せず、シリアルログに出力する
-                    print(f"Conflict: File {file.path} changed in repository1 and added in repository2.")
+                    print(f"Conflict: File {file} changed in repository1 and added in repository2.")
                 elif repository1_diff_type == REMOVE:
                     # リポジトリ1の更新履歴が削除の場合、コンフリクト(リポジトリ1で削除、リポジトリ2で変更)
                     # 暫定的にマージを実行せず、シリアルログに出力する
-                    print(f"Conflict: File {file.path} changed in repository1 and removed in repository2.")                
+                    print(f"Conflict: File {file} changed in repository1 and removed in repository2.")                
             elif diff_type == ADD:
                 # リポジトリ2に変更されたファイルが、リポジトリ2のみに存在する場合
                 # リポジトリ1にファイルをコピーする。
@@ -695,7 +728,7 @@ class management_info:
             elif diff_type == REMOVE:
                 # リポジトリ2に変更されたファイルが、リポジトリ1のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
-                print(f"Error: File {file.path} changed only in repository2. This should not happen.")
+                print(f"Error: File {file} changed only in repository2. This should not happen.")
                 
 
 
@@ -759,6 +792,7 @@ class management_info:
 
 
 if __name__ == "__main__":
+    '''
     parser = argparse.ArgumentParser(
         prog="PhotoAutoSync",
         usage="python.exe PhotoAutoSync.py <config_path> [start_phase]",
@@ -770,8 +804,11 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--phase", type=int, help="start phase num [1-4]")
     
     args = parser.parse_args()
-    config_file_path = args.config_path
-    phase_num = args.phase
+    '''
+    #config_file_path = args.config_path
+    config_file_path = "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/src/config"
+    #phase_num = args.phase
+    phase_num=1
     
     if (phase_num is None):
         phase_num=1
