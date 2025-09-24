@@ -543,24 +543,14 @@ class management_info:
         # 2 リポジトリ1の更新情報をマージ
         # 2-1 追加されたファイルをマージ
         
-        file_all = 0
-        file_process_cnt = 0
-        file_process_cnt2 = 0
-        add_file_num = 0
-        
         # ループ文中でインスタンスの要素を削除するため、リストのコピーを作成してループを回す
         files = copy.deepcopy(self.repository1.composition_history.added_files)
-        
-        file_all = len(files)
         for file in files:
             # 対象ファイルの差分情報を取得
             diff_type = self.composition_diff.diff_type(file)
-            file_process_cnt2 += 1
-            add_file_num = len(self.repository1.composition_history.added_files)
             if diff_type == EQUAL:
                 # 差分がない場合、マージは不要のため更新情報を削除する
                 self.repository1.composition_history.remove_diff_file(file)
-                file_process_cnt += 1
             elif diff_type == ADD:
                 # リポジトリ1に追加されたファイルが、リポジトリ2のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
@@ -792,7 +782,6 @@ class management_info:
 
 
 if __name__ == "__main__":
-    '''
     parser = argparse.ArgumentParser(
         prog="PhotoAutoSync",
         usage="python.exe PhotoAutoSync.py <config_path> [start_phase]",
@@ -804,11 +793,8 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--phase", type=int, help="start phase num [1-4]")
     
     args = parser.parse_args()
-    '''
-    #config_file_path = args.config_path
-    config_file_path = "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/src/config"
-    #phase_num = args.phase
-    phase_num=1
+    config_file_path = args.config_path
+    phase_num = args.phase
     
     if (phase_num is None):
         phase_num=1
