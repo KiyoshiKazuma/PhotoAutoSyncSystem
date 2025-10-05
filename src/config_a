@@ -1,0 +1,8 @@
+repository1_root_path: "D:/‰æ‘œ/Nextcloud_/Photos"
+repository1_repository_info_path: "D:/src/file_info_azuki.csv"
+repository1_history_path: "D:/src/diff_azuki.csv"
+repository2_root_path: "N:/Photos"
+repository2_repository_info_path: "D:/src/file_info_cashew.csv"
+repository2_history_path: "D:/src/diff_cashew.csv"
+back_up_folder_path: "D:/src/backup"
+log_file_path: "D:/src/log.txt"
