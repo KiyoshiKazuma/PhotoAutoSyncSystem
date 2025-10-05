@@ -92,6 +92,7 @@ def count_files(root_dir):
         file_count += len(files)
     return file_count
 
+
 class composition_info:
     # プロパティの宣言
     files: list[file_info]
@@ -318,7 +319,7 @@ class repository_info:
                  # 絶対パスを取得
                 absolute_file_path = os.path.join(root, filename)
 
-                # ルートディレクトリ(self.repository_root_path)からの相対パスを取得
+                # ルートディレクトリ(self.repository_root_path)からのer相対パスを取得
                 relative_file_path = os.path.relpath(absolute_file_path, self.repository_root_path)
 
                 file_path = relative_file_path
@@ -737,8 +738,13 @@ class management_info:
         self.repository2.clean_read_diff()
         
     def copy_file(self, src: str, dst: str, file: file_info):
-        src_path = os.path.join(src, file.path)
-        dst_path = os.path.join(dst, file.path)
+        if(type(file) is file_info):
+            file_path = file.path
+        else :
+            file_path = file
+        
+        src_path = os.path.join(src, file_path)
+        dst_path = os.path.join(dst, file_path)
         #　コピー先にファイルが存在する場合、上書きされるため、事前にバックアップを取得する
         if os.path.exists(dst_path):
             if src == self.repository1.repository_root_path:
@@ -754,11 +760,15 @@ class management_info:
             log_file.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Copying {src_path} to {dst_path}\n")
         shutil.copy2(src_path, dst_path)
     
-    def move_file(self, src: str, file: file_info):
-        src_path = os.path.join(src, file.path)
+    def move_file(self, src: str, file):
+        if(type(file) is file_info):
+            file_path = file.path
+        else :
+            file_path = file
+        src_path = os.path.join(src, file_path)
         # バックアップ先のファイル名はタイムスタンプを付与する
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        dst_path = os.path.join(self.back_up_folder_path, f"{timestamp}_{file.path}")
+        dst_path = os.path.join(self.back_up_folder_path, f"{timestamp}_{file_path}")
         dst_dir = os.path.dirname(dst_path)
         if not os.path.exists(dst_dir):
             os.makedirs(dst_dir)
@@ -782,19 +792,24 @@ class management_info:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog="PhotoAutoSync",
-        usage="python.exe PhotoAutoSync.py <config_path> [start_phase]",
-        epilog="end",
-        add_help=True,
-    )
-    
-    parser.add_argument("config_path", type=str, help="Config file path")
-    parser.add_argument("-p", "--phase", type=int, help="start phase num [1-4]")
-    
-    args = parser.parse_args()
-    config_file_path = args.config_path
-    phase_num = args.phase
+    DEBUG = True
+    if DEBUG == False:
+        parser = argparse.ArgumentParser(
+            prog="PhotoAutoSync",
+            usage="python.exe PhotoAutoSync.py <config_path> [start_phase]",
+            epilog="end",
+            add_help=True,
+        )
+        
+        parser.add_argument("config_path", type=str, help="Config file path")
+        parser.add_argument("-p", "--phase", type=int, help="start phase num [1-4]")
+        
+        args = parser.parse_args()
+        config_file_path = args.config_path
+        phase_num = args.phase
+    else:
+        config_file_path = "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/src/config_a"
+        phase_num = 3
     
     if (phase_num is None):
         phase_num=1
