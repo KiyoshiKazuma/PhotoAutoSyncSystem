@@ -235,6 +235,7 @@ class composition_diff_info:
             self.removed_files.remove(file_path)
         elif file_path in self.changed_files:
             self.changed_files.remove(file_path)
+    
 
     def print(self):
         print("Added:")
@@ -438,6 +439,7 @@ class management_info:
     composition_diff: composition_diff_info  # 構成情報の差分
     back_up_folder_path: str                 # バックアップフォルダのパス
     log_file_path: str                       # ログファイルのパス
+    os_ret : bool
 
     def __init__(self,config_file_path: str):
         self.config_file_path = config_file_path
@@ -561,7 +563,10 @@ class management_info:
                 # リポジトリ2にファイルをコピーする。
                 self.copy_file_repository1_to_2(file)
                 # 更新情報を削除する
-                self.repository1.composition_history.remove_diff_file(file)
+                # ファイル操作が成功した場合のみ削除する
+                if self.os_ret:
+                    self.repository1.composition_history.remove_diff_file(file)
+                    self.repository1.composition_history.write(self.repository1.history_file_path)
             elif diff_type == CHANGE:
                 # リポジトリ1に追加されたファイルが、リポジトリ2のファイルと差分がある場合
                 # コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
@@ -577,12 +582,16 @@ class management_info:
             if diff_type == EQUAL:
                 # 差分がない場合、マージは不要のため更新情報を削除する
                 self.repository1.composition_history.remove_diff_file(file)
+                self.repository1.composition_history.write(self.repository1.history_file_path)
             elif diff_type == ADD:
                 # リポジトリ1に削除されたファイルが、リポジトリ2のみに存在する場合
                 # リポジトリ2からファイルを削除する。
                 self.move_file_repository2_to_backup(file)
                 # 更新情報を削除する
-                self.repository1.composition_history.remove_diff_file(file)
+                # ファイル操作が成功した場合のみ削除する
+                if self.os_ret:
+                    self.repository1.composition_history.remove_diff_file(file)
+                    self.repository1.composition_history.write(self.repository1.history_file_path)
             elif diff_type == REMOVE:
                 # リポジトリ1に削除されたファイルが、リポジトリ1のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
@@ -608,7 +617,10 @@ class management_info:
                     # リポジトリ2の更新履歴がない場合、リポジトリ1のファイルをリポジトリ2にコピーする
                     self.copy_file_repository1_to_2(file)
                     # 更新情報を削除する
-                    self.repository1.composition_history.remove_diff_file(file)
+                    # ファイル操作が成功した場合のみ削除する
+                    if self.os_ret:
+                        self.repository1.composition_history.remove_diff_file(file)
+                        self.repository1.composition_history.write(self.repository1.history_file_path)
                 elif repository2_diff_type == CHANGE:
                     # リポジトリ2の更新履歴も変更の場合、コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
                     # 暫定的にマージを実行せず、シリアルログに出力する
@@ -630,7 +642,10 @@ class management_info:
                 # リポジトリ2にファイルをコピーする。
                 self.copy_file_repository1_to_2(file)
                 # 更新情報を削除する
-                self.repository1.composition_history.remove_diff_file(file)
+                # ファイル操作が成功した場合のみ削除する
+                if self.os_ret:
+                    self.repository1.composition_history.remove_diff_file(file)
+                    self.repository1.composition_history.write(self.repository1.history_file_path)
         
         # 3 リポジトリ2の更新情報をマージ
         # ループ文中でインスタンスの要素を削除するため、リストのコピーを作成してループを回す
@@ -643,12 +658,16 @@ class management_info:
             if diff_type == EQUAL:
                 # 差分がない場合、マージは不要のため更新情報を削除する
                 self.repository2.composition_history.remove_diff_file(file)
+                self.repository2.composition_history.write(self.repository2.history_file_path)
             elif diff_type == ADD:
                 # リポジトリ2に追加されたファイルが、リポジトリ2のみに存在する場合
                 # リポジトリ1にファイルをコピーする。
                 self.copy_file_repository2_to_1(file)
                 # 更新情報を削除する
-                self.repository2.composition_history.remove_diff_file(file)
+                # ファイル操作が成功した場合のみ削除する
+                if self.os_ret:
+                    self.repository2.composition_history.remove_diff_file(file)
+                    self.repository2.composition_history.write(self.repository2.history_file_path)
             elif diff_type == REMOVE:
                 # リポジトリ2に追加されたファイルが、リポジトリ1のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
@@ -666,6 +685,7 @@ class management_info:
             if diff_type == EQUAL:
                 # 差分がない場合、マージは不要のため更新情報を削除する
                 self.repository2.composition_history.remove_diff_file(file)
+                self.repository2.composition_history.write(self.repository2.history_file_path)
             elif diff_type == ADD:
                 # リポジトリ2に削除されたファイルが、リポジトリ2のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
@@ -675,7 +695,10 @@ class management_info:
                 # リポジトリ1からファイルを削除する。
                 self.move_file_repository1_to_backup(file)
                 # 更新情報を削除する
-                self.repository2.composition_history.remove_diff_file(file)
+                # ファイル操作が成功した場合のみ削除する
+                if self.os_ret:
+                    self.repository2.composition_history.remove_diff_file(file)
+                    self.repository2.composition_history.write(self.repository2.history_file_path)
             elif diff_type == CHANGE:
                 # リポジトリ2に削除されたファイルが、リポジトリ1のファイルと差分がある場合
                 # コンフリクト(リポジトリ1で変更、リポジトリ2で削除)
@@ -689,6 +712,7 @@ class management_info:
             if diff_type == EQUAL:
                 # 差分がない場合、マージは不要のため更新情報を削除する
                 self.repository2.composition_history.remove_diff_file(file)
+                self.repository2.composition_history.write(self.repository2.history_file_path)
             elif diff_type == CHANGE:
                 # リポジトリ2に変更されたファイルが、リポジトリ1と差分がある場合
                 # リポジトリ1の更新履歴により分岐
@@ -697,7 +721,10 @@ class management_info:
                     # リポジトリ1の更新履歴がない場合、リポジトリ2のファイルをリポジトリ1にコピーする
                     self.copy_file_repository2_to_1(file)
                     # 更新情報を削除する
-                    self.repository1.composition_history.remove_diff_file(file)
+                    # ファイル操作が成功した場合のみ削除する
+                    if self.os_ret:
+                        self.repository1.composition_history.remove_diff_file(file)
+                        self.repository2.composition_history.write(self.repository2.history_file_path)
                 elif repository1_diff_type == CHANGE:
                     # リポジトリ1の更新履歴も変更の場合、コンフリクト(リポジトリ1とリポジトリ2の両方で変更)
                     # 暫定的にマージを実行せず、シリアルログに出力する
@@ -715,7 +742,10 @@ class management_info:
                 # リポジトリ1にファイルをコピーする。
                 self.copy_file_repository2_to_1(file)
                 # 更新情報を削除する
-                self.repository2.composition_history.remove_diff_file(file)
+                # ファイル操作が成功した場合のみ削除する
+                if self.os_ret:
+                    self.repository2.composition_history.remove_diff_file(file)
+                    self.repository2.composition_history.write(self.repository2.history_file_path)
             elif diff_type == REMOVE:
                 # リポジトリ2に変更されたファイルが、リポジトリ1のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
@@ -738,6 +768,9 @@ class management_info:
         self.repository2.clean_read_diff()
         
     def copy_file(self, src: str, dst: str, file: file_info):
+        
+        self.os_ret = True
+        
         if(type(file) is file_info):
             file_path = file.path
         else :
@@ -746,21 +779,27 @@ class management_info:
         src_path = os.path.join(src, file_path)
         dst_path = os.path.join(dst, file_path)
         #　コピー先にファイルが存在する場合、上書きされるため、事前にバックアップを取得する
-        if os.path.exists(dst_path):
-            if src == self.repository1.repository_root_path:
-                self.move_file_repository2_to_backup(file)
-            else:
-                self.move_file_repository1_to_backup(file)
-        dst_dir = os.path.dirname(dst_path)
-        if not os.path.exists(dst_dir):
-            os.makedirs(dst_dir)
-        print(f"Copying {src_path} to {dst_path}")
-        #ログファイルにコピー情報を出力
-        with open(self.log_file_path, "a", encoding='cp932') as log_file:
-            log_file.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Copying {src_path} to {dst_path}\n")
-        shutil.copy2(src_path, dst_path)
+        
+        try:
+            if os.path.exists(dst_path):
+                if src == self.repository1.repository_root_path:
+                    self.move_file_repository2_to_backup(file)
+                else:
+                    self.move_file_repository1_to_backup(file)
+            dst_dir = os.path.dirname(dst_path)
+            if not os.path.exists(dst_dir):
+                os.makedirs(dst_dir)
+            print(f"Copying {src_path} to {dst_path}")
+            shutil.copy2(src_path, dst_path)
+            #ログファイルにコピー情報を出力
+            with open(self.log_file_path, "a", encoding='cp932') as log_file:
+                log_file.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Copying {src_path} to {dst_path}\n")
+        except Exception as e:
+            print(f"Error copying {src_path} to {dst_path}: {e}")
+            self.os_ret = False
     
     def move_file(self, src: str, file):
+        os_ret = True
         if(type(file) is file_info):
             file_path = file.path
         else :
@@ -770,13 +809,17 @@ class management_info:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         dst_path = os.path.join(self.back_up_folder_path, f"{timestamp}_{file_path}")
         dst_dir = os.path.dirname(dst_path)
-        if not os.path.exists(dst_dir):
-            os.makedirs(dst_dir)
-        print(f"Moving {src_path} to {dst_path}")
-        #ログファイルに移動情報を出力
-        with open(self.log_file_path, "a", encoding='cp932') as log_file:
-            log_file.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Moving {src_path} to {dst_path}\n")
-        shutil.move(src_path, dst_path)
+        try:
+            if not os.path.exists(dst_dir):
+                os.makedirs(dst_dir)
+            print(f"Moving {src_path} to {dst_path}")
+            shutil.move(src_path, dst_path)
+            #ログファイルに移動情報を出力
+            with open(self.log_file_path, "a", encoding='cp932') as log_file:
+                log_file.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Moving {src_path} to {dst_path}\n")
+        except Exception as e:
+            print(f"Error moving {src_path} to {dst_path}: {e}")
+            self.os_ret = False
 
     def copy_file_repository1_to_2(self, file: file_info):
         self.copy_file(self.repository1.repository_root_path, self.repository2.repository_root_path, file)
