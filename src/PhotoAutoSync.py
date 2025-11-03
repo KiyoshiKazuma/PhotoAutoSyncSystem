@@ -557,7 +557,7 @@ class management_info:
             elif diff_type == ADD:
                 # リポジトリ1に追加されたファイルが、リポジトリ2のみに存在する場合
                 # ありえないユースケースのためエラーログを出力。更新情報は保持する
-                print(f"Error: File {file.path} exists only in repository1. This should not happen.")
+                print(f"Error: File {file} exists only in repository1. This should not happen.")
             elif diff_type == REMOVE:
                 # リポジトリ1に追加されたファイルが、リポジトリ1のみに存在する場合
                 # リポジトリ2にファイルをコピーする。
@@ -852,7 +852,7 @@ if __name__ == "__main__":
         phase_num = args.phase
     else:
         config_file_path = "C:/Users/makiy/programing/python/PhotoAutoSyncSystem/src/config_a"
-        phase_num = 3
+        phase_num = 1
     
     if (phase_num is None):
         phase_num=1
